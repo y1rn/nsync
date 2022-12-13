@@ -12,7 +12,7 @@ import (
 
 func Sync(url, token, configPath, nodePrefix string) error {
 
-	configs, err := loadConfig(configPath)
+	configs, err := LoadConfig(configPath)
 	if err != nil {
 		return err
 	}
@@ -25,16 +25,17 @@ func Sync(url, token, configPath, nodePrefix string) error {
 		return errors.New("no neko rule data")
 	}
 	for _, config := range configs {
-		err = sync(config, ruleResp.Data, nodePrefix)
+		temp, err := GetOutput(config, ruleResp.Data, nodePrefix)
 		if err != nil {
 			return err
 		}
+		writeYaml(config.OutPut, temp)
 	}
 
 	return nil
 }
 
-func sync(config Config, data []neko.Data, nodePrefix string) error {
+func GetOutput(config Config, data []neko.Data, nodePrefix string) (map[string]any, error) {
 	proxies := []map[string]any{}
 	pg := ProxyGroup{
 		Name:    config.Group.Name,
@@ -75,7 +76,7 @@ func sync(config Config, data []neko.Data, nodePrefix string) error {
 
 	temp, err := config.LoadTemplate()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	temp[KEY_PROXIES] = proxyAppend(temp[KEY_PROXIES].([]any), proxies, KEY_NAME, nodePrefix)
@@ -98,7 +99,7 @@ func sync(config Config, data []neko.Data, nodePrefix string) error {
 
 	temp[KEY_GROUP] = pgs
 
-	return writeYaml(config.OutPut, temp)
+	return temp, nil
 }
 
 func newProxy(p map[string]any, d neko.Data, proxyName string) map[string]any {

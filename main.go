@@ -45,15 +45,8 @@ func main() {
 				Value:       "https://relay.nekoneko.cloud/api/rules",
 				Usage:       "nekoneko api url",
 			},
-			&cli.DurationFlag{
-				Name:        "duration",
-				Aliases:     []string{"d"},
-				Destination: &config.Timer,
-				Usage:       "sync diration, run only once if not set",
-			},
 		},
 		Action: func(ctx *cli.Context) error {
-
 			return sync.Sync(config.Url, config.Token, config.ConfigFilePath, config.NodePrefix)
 		},
 	}

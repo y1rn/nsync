@@ -41,7 +41,7 @@ func (c *Config) LoadTemplate() (map[string]any, error) {
 	return temp, nil
 }
 
-func loadConfig(configPath string) ([]Config, error) {
+func LoadConfig(configPath string) ([]Config, error) {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, err
